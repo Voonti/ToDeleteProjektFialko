@@ -88,12 +88,14 @@ MY_POINT* MY_DATA::allocTab(MY_POINT* ptab, int n)
 
 MY_DATA::MY_DATA(int no_it)
 {
+    pExcept = GetExceptPtr();
     pTab = NULL;
     Init(no_it);
 }
 
 MY_DATA::MY_DATA(const MY_DATA& ob)
 {
+    pExcept = GetExceptPtr();
     capacity = ob.capacity;
     last = ob.last;
     pTab = NULL;
@@ -111,19 +113,24 @@ void MY_DATA::Init(int no_it)
 
 void MY_DATA::Push(const MY_POINT& tmp)
 {
-    if (last >= capacity)
-    {
-        int delta = last - capacity;
-        int new_capacity = (delta > capacity) ? (capacity + delta) : (2 * capacity);
-        int old_capacity(capacity);
-        MY_POINT* newTab(NULL);
-        newTab = allocTab(newTab, new_capacity);
-        std::copy(pTab, pTab + old_capacity, newTab);
-        delete[] pTab;
-        pTab = newTab;
-    }
+    try {
+        if (last >= capacity)
+        {
+            int delta = last - capacity;
+            int new_capacity = (delta > capacity) ? (capacity + delta) : (2 * capacity);
+            int old_capacity(capacity);
+            MY_POINT* newTab(NULL);
+            newTab = allocTab(newTab, new_capacity);
+            std::copy(pTab, pTab + old_capacity, newTab);
+            delete[] pTab;
+            pTab = newTab;
+        }
 
-    pTab[last++] = tmp;
+        pTab[last++] = tmp;
+    }
+    catch (const std::exception& ex) {
+        pExcept->PutMessage(IDS_EXCEPTION_DATA);
+    }
 }
 
 
@@ -132,10 +139,6 @@ void MY_DATA::clear_all()
     delete[] pTab;
     pTab = new MY_POINT[capacity];
 }
-
-
-
-
 
 string MY_DATA::OpenFileDialog()
 {
@@ -178,21 +181,26 @@ bool MY_DATA::SaveFileDialog(char* filename, DWORD nMaxFile)
 }
 
 void MY_DATA::addObject(const MY_POINT& newPoint) {
-    if (last >= capacity) {
-        capacity = capacity * 2 + 1;
-        pTab = allocTab(pTab, capacity);
+    try {
+        if (last >= capacity) {
+            capacity = capacity * 2 + 1;
+            pTab = allocTab(pTab, capacity);
+        }
+        pTab[last] = newPoint;
+
+        pTab[last].name = new char[32];
+        if (newPoint.name) {
+            size_t nameLength = strlen(newPoint.name);
+            pTab[last].name = new char[nameLength + 1];
+
+            strcpy_s(pTab[last].name, nameLength + 1, newPoint.name);
+        }
+
+        ++last;
     }
-    pTab[last] = newPoint;
-
-    pTab[last].name = new char[32];
-    if (newPoint.name) {
-        size_t nameLength = strlen(newPoint.name);
-        pTab[last].name = new char[nameLength + 1];
-
-        strcpy_s(pTab[last].name, nameLength + 1, newPoint.name);
+    catch (const std::exception& ex) {
+        pExcept->PutMessage(IDS_EXCEPTION_DATA);
     }
-
-    ++last;
 }
 
 void MY_DATA::getLastObject()
@@ -211,18 +219,23 @@ void MY_DATA::getLastObject()
 
 void MY_DATA::removeObject()
 {
-    if (last > 0) {
-        last--;
-        MY_POINT& removedPoint = pTab[last];
-        delete[] removedPoint.name;
-        removedPoint.name = nullptr;
-        removedPoint.x = 0;
-        removedPoint.y = 0;
-        removedPoint.numb = 0;
-        removedPoint.color = 0;
+    try{
+        if (last > 0) {
+            last--;
+            MY_POINT& removedPoint = pTab[last];
+            delete[] removedPoint.name;
+            removedPoint.name = nullptr;
+            removedPoint.x = 0;
+            removedPoint.y = 0;
+            removedPoint.numb = 0;
+            removedPoint.color = 0;
+        }
+        else {
+            std::cout << "No objects to remove." << std::endl;
+        }
     }
-    else {
-        std::cout << "No objects to remove." << std::endl;
+    catch (const std::exception& ex) {
+        pExcept->PutMessage(IDS_EXCEPTION_DATA);
     }
 }
 
@@ -237,29 +250,37 @@ void MY_DATA::removeAllObjects()
 
 void MY_DATA::modifyObject(int index)
 {
-    if (index >= 0 && index < last) {
-        MY_POINT& point = pTab[index];
-        point.set(15, 30); 
-        point.name = "ModifiedName"; 
-        point.numb = 42; 
-        point.color = RGB(255, 0, 0); 
+    try {
+        if (index >= 0 && index < last) {
+            MY_POINT& point = pTab[index];
+            point.set(15, 30); 
+            point.name = "ModifiedName"; 
+            point.numb = 42; 
+            point.color = RGB(255, 0, 0); 
+        }
+        else {
+            std::cout << "Invalid index." << std::endl;
+        }
     }
-    else {
-        std::cout << "Invalid index." << std::endl;
+    catch (const std::exception& ex) {
+        pExcept->PutMessage(IDS_EXCEPTION_DATA);
     }
 }
 
-void MY_DATA::findObjectsByNumber(int number)
+void MY_DATA::findPoint(int num)
 {
-    bool found = false;
-    for (int i = 0; i < last; ++i) {
-        if (pTab[i].numb == number) {
-            std::cout << "Found object with number " << number << ": X: " << pTab[i].x << ", Y: " << pTab[i].y << std::endl;
-            found = true;
+    try {
+        bool point = false;
+        for (int i = 0; i < last; ++i) {
+            if (pTab[i].numb == num) {
+                point = true;
+            }
         }
+        if (!point)
+            throw std::runtime_error("");
     }
-    if (!found) {
-        std::cout << "No objects found with number " << number << "." << std::endl;
+    catch (const std::exception& ex) {
+        pExcept->PutMessage(IDS_EXCEPTION_NO_POINT_FOUND);
     }
 }
 
@@ -276,21 +297,24 @@ void MY_DATA::displayData()
 
 void MY_DATA::exportToCSV(const std::string& filename)
 {
-    
-    
-    std::ofstream file(filename);
-    if (!file.is_open())
-    {
-        throw std::runtime_error("Unable to open file for writing");
+    try {
+        std::ofstream file(filename);
+        if (!file.is_open())
+        {
+            throw std::runtime_error("");
+        }
+        file << "X,Y,Name,Number,Color" << std::endl;
+        for (int i = 0; i < last; ++i) {
+            const MY_POINT& point = pTab[i];
+            file << point.x << "," << point.y << "," << (point.name ? point.name : "") << "," << point.numb << "," << point.color << std::endl;
+        }
+        file.close();
+        std::string command = "start excel " + filename;
+        system(command.c_str());
     }
-    file << "X,Y,Name,Number,Color" << std::endl;
-    for (int i = 0; i < last; ++i) {
-        const MY_POINT& point = pTab[i];
-        file << point.x << "," << point.y << "," << (point.name ? point.name : "") << "," << point.numb << "," << point.color << std::endl;
+    catch (const std::exception& ex) {
+        pExcept->PutMessage(IDS_EXCEPTION_FILE);
     }
-    file.close();
-    std::string command = "start excel " + filename;
-    system(command.c_str());
 }
 
 void MY_DATA::quitApplication()
@@ -322,24 +346,27 @@ void MY_DATA::GetMaxMinCoords(double& max_x, double& min_x, double& max_y, doubl
 }
 
 bool MY_DATA::exportToCSV(const char* filename) {
+    try {
+        std::ofstream outFile(filename);
 
-    std::ofstream outFile(filename);
+        // Write header
+        outFile << "x,y,name,numb,color\n";
 
-    // Write header
-    outFile << "x,y,name,numb,color\n";
+        // Write data
+        for (int i = 0; i < last; ++i) {
+            outFile << pTab[i].x << ","
+                << pTab[i].y << ","
+                << (pTab[i].name ? pTab[i].name : "") << ","
+                << pTab[i].numb << ","
+                << pTab[i].color << "\n";
+        }
 
-    // Write data
-    for (int i = 0; i < last; ++i) {
-        outFile << pTab[i].x << ","
-            << pTab[i].y << ","
-            << (pTab[i].name ? pTab[i].name : "") << ","
-            << pTab[i].numb << ","
-            << pTab[i].color << "\n";
+        outFile.close();
+        return true;
     }
-
-    outFile.close();
-    return true;
-
+    catch (const std::exception& ex) {
+        pExcept->PutMessage(IDS_EXCEPTION_FILE);
+    }
 }
 
 std::wstring convertToWideString(const char* str) {

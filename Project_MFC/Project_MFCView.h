@@ -65,6 +65,7 @@ public:
 	afx_msg void OnOperateSaveToBinary();
 	afx_msg void OnOperateLoadFromBinary();
 	afx_msg void OnFileExport();
+	afx_msg void OnPointFind();
 	virtual void OnInitialUpdate();
 };
 

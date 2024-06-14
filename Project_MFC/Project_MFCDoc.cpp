@@ -1,6 +1,7 @@
 
 // Project_MFCDoc.cpp : implementation of the CProjectMFCDoc class
 //
+#pragma once
 
 #include "pch.h"
 #include "framework.h"
@@ -88,12 +89,8 @@ void CProjectMFCDoc::Serialize(CArchive& ar)
 			ar.Write(&fontSize, sizeof(fontSize));
 			ar.Write(&font, sizeof(font));
 
-			size_t nameLength = (pTabTemp[i].name != nullptr) ? strlen(pTabTemp[i].name) : 0;
-			ar.Write(&nameLength, sizeof(nameLength));
-			if (nameLength > 0)
-			{
-				ar.Write(pTabTemp[i].name, nameLength);
-			}
+			CString nameStr = pTabTemp[i].name != nullptr ? CString(pTabTemp[i].name) : _T("");
+			ar.WriteString(nameStr + _T("\n"));
 		}
 
 		pExcept->PutMessage(1001);
@@ -115,18 +112,20 @@ void CProjectMFCDoc::Serialize(CArchive& ar)
 			ar.Read(&fontSize, sizeof(fontSize));
 			ar.Read(&font, sizeof(font));
 
-			size_t nameLength;
-			ar.Read(&nameLength, sizeof(nameLength));
-			if (nameLength > 0)
+			CString nameStr;
+			ar.ReadString(nameStr);
+
+			if (!nameStr.IsEmpty())
 			{
-				myPointObj.name = new char[nameLength + 1];
-				ar.Read(myPointObj.name, nameLength);
-				myPointObj.name[nameLength] = '\0'; 
+				int length = nameStr.GetLength();
+				myPointObj.name = new char[length + 1];
+				strcpy_s(myPointObj.name, length + 1, CT2A(nameStr));
 			}
 			else
 			{
 				myPointObj.name = nullptr;
 			}
+
 
 			pDat->addObject(myPointObj);
 		}

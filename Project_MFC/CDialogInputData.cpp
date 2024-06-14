@@ -1,5 +1,6 @@
 // CDialogInputData.cpp : implementation file
 //
+#pragma once
 
 #include "pch.h"
 #include "Project_MFC.h"
@@ -151,6 +152,8 @@ void CDialogInputData::OnBnClickedButtonDetails()
 void CDialogInputData::ModifyData()
 {
     try {
+        throw std::runtime_error("");
+
         char st[512];
         UpdateData(TRUE);
         const int no_it = m_ListCtrl.GetItemCount();

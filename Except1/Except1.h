@@ -9,6 +9,7 @@
 
 #include "resource.h"		// main symbols
 
+class MY_DATA;
 #include "MyData.h"
 
 

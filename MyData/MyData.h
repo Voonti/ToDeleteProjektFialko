@@ -39,6 +39,8 @@ public:
 
 
 #pragma pack(push, 1)
+class CExcept1App;
+#include "Except1.h"
 
 class MYDATA_API MY_DATA : public MY_POINT
 {
@@ -46,6 +48,8 @@ protected:
 	MY_POINT* pTab;
 	int capacity;
 	int last;
+public:
+	CExcept1App* pExcept;
 public:
 	MY_DATA(int no_it);
 	MY_DATA(const MY_DATA& ob);
@@ -72,7 +76,7 @@ public:
 	void removeObject();
 	void removeAllObjects();
 	void modifyObject(int index);
-	void findObjectsByNumber(int number);
+	void findPoint(int num);
 	void displayData();
 	void exportToCSV(const std::string& filename);
 	void quitApplication();

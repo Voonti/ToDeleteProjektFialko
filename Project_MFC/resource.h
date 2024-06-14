@@ -2,6 +2,8 @@
 // Microsoft Visual C++ generated include file.
 // Used by ProjectMFC.rc
 //
+#pragma once
+
 #define IDD_ABOUTBOX                    100
 #define IDP_OLE_INIT_FAILED             100
 #define IDR_POPUP_EDIT                  119
@@ -110,6 +112,7 @@
 #define ID_OPERATE_LOAD_BINARY          32773
 #define ID_MENU_DRAW_OPTIONS            32777
 #define ID_FILE_EXPORT                  32775
+#define ID_FIND_POINT                  32778
 #define IDS_EXCEPTION_WRONG_FILE_FORMAT 40000
 #define IDS_EXCEPTION_NO_POINTS         40001
 #define IDS_EXCEPTION_WRONG_DATA        40002

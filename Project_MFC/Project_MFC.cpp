@@ -1,3 +1,4 @@
+#pragma once
 
 // Project_MFC.cpp : Defines the class behaviors for the application.
 //

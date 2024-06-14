@@ -1,3 +1,4 @@
+#pragma once
 
 // Project_MFCView.cpp : implementation of the CProjectMFCView class
 //
@@ -36,6 +37,7 @@ BEGIN_MESSAGE_MAP(CProjectMFCView, CView)
 	ON_COMMAND(ID_OPERATE_SAVE_BINARY, &CProjectMFCView::OnOperateSaveToBinary)
 	ON_COMMAND(ID_OPERATE_LOAD_BINARY, &CProjectMFCView::OnOperateLoadFromBinary)
 	ON_COMMAND(ID_FILE_EXPORT, &CProjectMFCView::OnFileExport)
+	ON_COMMAND(ID_FIND_POINT, &CProjectMFCView::OnPointFind)
 	ON_COMMAND(ID_FILE_SAVE, &CProjectMFCView::OnOperateSaveToBinary)
 	ON_COMMAND(ID_FILE_OPEN, &CProjectMFCView::OnOperateLoadFromBinary)
 END_MESSAGE_MAP()
@@ -339,6 +341,16 @@ void CProjectMFCView::OnOperateLoadFromBinary()
 	}
 	catch (const std::exception& ex) {
 		pExcept->PutMessage(IDS_EXCEPTION_WRONG_FILE_FORMAT);
+	}
+}
+
+
+void CProjectMFCView::OnPointFind()
+{
+	CProjectMFCDoc* pDoc = GetDocument();
+	if (pDoc && pDoc->pDat)
+	{
+		pDoc->pDat->findPoint(1);
 	}
 }
 

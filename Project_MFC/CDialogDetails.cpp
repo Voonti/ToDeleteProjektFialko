@@ -1,3 +1,5 @@
+#pragma once
+
 #include "pch.h"
 #include "Project_MFC.h"
 #include "framework.h"
@@ -29,8 +31,7 @@ CDialogDetails::CDialogDetails(CProjectMFCDoc* pDoc, double pointSize, double fo
 CDialogDetails::CDialogDetails(CWnd* pParent /*=nullptr*/)
     : CDialogEx(IDD_DIALOG_DETAILS, pParent), m_PointSize(12), m_FontSize(12)
 {
-
-
+    pExcept = GetExceptPtr(); 
 }
 
 CDialogDetails::~CDialogDetails()

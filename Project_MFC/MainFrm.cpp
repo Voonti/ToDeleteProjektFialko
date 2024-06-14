@@ -1,3 +1,4 @@
+#pragma once
 
 // MainFrm.cpp : implementation of the CMainFrame class
 //
